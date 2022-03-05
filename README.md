@@ -102,3 +102,55 @@ EOC
 ubuntu2-85c46bf867-mtvs8 Sat Mar 5 13:07:20 UTC 2022
 ubuntu2-85c46bf867-lsd6g Sat Mar 5 13:24:18 UTC 2022
 ```
+
+# 5. Can Ubuntu3 simultaneously mount the filesystem which is already mounted by Ubuntu1?
+Yes it can.
+```
+# kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu3
+spec:
+  selector:
+    matchLabels:
+      app: ubuntu3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ubuntu3
+    spec:
+      containers:
+      - name: ubuntu
+        image: ubuntu:20.04
+        command:
+          - sleep
+          - infinity
+        volumeMounts:
+        - name: ubuntu3-data
+          mountPath: /mnt
+      volumes:
+        - name: ubuntu3-data
+          persistentVolumeClaim:
+           claimName: ubuntu1-pvc
+EOF
+```
+```
+# kubectl get pods -o wide 
+NAME                       READY   STATUS    RESTARTS   AGE     IP              NODE      NOMINATED NODE   READINESS GATES
+ubuntu1-6d947cb98f-85z8f   2/2     Running   0          63m     10.10.235.141   worker1   <none>           <none>
+ubuntu2-85c46bf867-lsd6g   2/2     Running   0          63m     10.10.182.7     worker3   <none>           <none>
+ubuntu3-5498c5db47-zgbl7   2/2     Running   0          3m55s   10.10.189.76    worker2   <none>           <none>
+```
+```
+# kubectl exec -it ubuntu3-5498c5db47-zgbl7 -- /bin/bash
+root@ubuntu3-5498c5db47-zgbl7:/# 
+root@ubuntu3-5498c5db47-zgbl7:/# cd /mnt
+root@ubuntu3-5498c5db47-zgbl7:/# 
+root@ubuntu3-5498c5db47-zgbl7:/mnt# cat ubuntu1_in_persistent_volume.txt 
+ubuntu1-6d947cb98f-9hktf Sat Mar 5 13:16:50 UTC 2022
+ubuntu1-6d947cb98f-85z8f Sat Mar 5 13:23:41 UTC 2022
+root@ubuntu3-5498c5db47-zgbl7:/mnt#
+```
+
