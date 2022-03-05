@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ubuntu1-pv
+spec:
+  storageClassName: nfs-storage
+  volumeMode: Filesystem
+  capacity:
+    storage: 1Gi
+  persistentVolumeReclaimPolicy: Retain
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/ubuntu1"
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ubuntu1-pvc
+spec:
+  storageClassName: nfs-storage
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu1
+spec:
+  selector:
+    matchLabels:
+      app: ubuntu1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ubuntu1
+    spec:
+      containers:
+      - name: ubuntu
+        image: ubuntu:20.04
+        command:
+          - sleep
+          - infinity
+        volumeMounts:
+        - name: ubuntu1-data
+          mountPath: /mnt
+      volumes:
+        - name: ubuntu1-data
+          persistentVolumeClaim:
+           claimName: ubuntu1-pvc
