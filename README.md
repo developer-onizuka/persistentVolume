@@ -1,7 +1,7 @@
 # persistentVolume
 
 # 0. Create NFS server
-NFS server is convenient to mount filesystem over worker nodes as a persistent volume. You may use attached Vagrantfile to create NFS server as a Virtual Machine.
+NFS server is convenient to mount filesystem over worker nodes as a persistent volume. You may use attached [Vagrantfile](https://github.com/developer-onizuka/persistentVolume/blob/main/Vagrantfile) to create NFS server as a Virtual Machine.
 ```
 # git clone https://github.com/developer-onizuka/persistentVolume.git
 # cd persistentVolume
