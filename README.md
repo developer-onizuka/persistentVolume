@@ -21,6 +21,21 @@ NAME                       READY   STATUS    RESTARTS   AGE   IP              NO
 ubuntu1-6d947cb98f-9hktf   2/2     Running   0          20m   10.10.189.74    worker2   <none>           <none>
 ubuntu2-85c46bf867-mtvs8   2/2     Running   0          17m   10.10.199.142   worker4   <none>           <none>
 ```
+```
+# kubectl get sc
+NAME          PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+nfs-storage   kubernetes.io/no-provisioner   Retain          Immediate           false                  89m
+
+# kubectl get pv 
+NAME         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+ubuntu1-pv   1Gi        RWO            Retain           Bound    default/ubuntu1-pvc   nfs-storage             80m
+ubuntu2-pv   1Gi        RWO            Retain           Bound    default/ubuntu2-pvc   nfs-storage             67m
+
+# kubectl get pvc
+NAME          STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+ubuntu1-pvc   Bound    ubuntu1-pv   1Gi        RWO            nfs-storage    80m
+ubuntu2-pvc   Bound    ubuntu2-pv   1Gi        RWO            nfs-storage    67m
+```
 
 # 2-1. Create a new file in Persistent Volume on Ubuntu1
 ```
