@@ -13,19 +13,27 @@ Install nfs-client and Mount the NFS directory on each worker node. In my case, 
 # sudo mount -v 192.168.33.11:/ /mnt
 ```
 
-# 1. Create Ubuntu containers with Persistent Volume Craim
+# 1-1. Create Storage Class
+A StorageClass provides a way for administrators to describe the "provisioner" and its parameter for storage they offer such as premium or standard in case of Azure.<br>
+If using a provisioner plugin, you can add it to the provisioner parameter in the configuration, something like kubernetes.io/aws-ebs or kubernetes.io/azure-file but no plugin for NFS is provided. So use anything like "kubernetes.io/no-provisioner" instead.
+
 ```
-# kubectl apply -f sc.yaml ubuntu1.yaml ubuntu2.yaml
+# kubectl apply -f sc.yaml 
+```
+```
+# kubectl get sc
+NAME          PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+nfs-storage   kubernetes.io/no-provisioner   Retain          Immediate           false                  89m
+```
+# 1-2. Create Ubuntu containers with Persistent Volume Craim
+```
+# kubectl apply -f ubuntu1.yaml ubuntu2.yaml
 # kubectl get pods -o wide
 NAME                       READY   STATUS    RESTARTS   AGE   IP              NODE      NOMINATED NODE   READINESS GATES
 ubuntu1-6d947cb98f-9hktf   2/2     Running   0          20m   10.10.189.74    worker2   <none>           <none>
 ubuntu2-85c46bf867-mtvs8   2/2     Running   0          17m   10.10.199.142   worker4   <none>           <none>
 ```
 ```
-# kubectl get sc
-NAME          PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-nfs-storage   kubernetes.io/no-provisioner   Retain          Immediate           false                  89m
-
 # kubectl get pv 
 NAME         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
 ubuntu1-pv   1Gi        RWO            Retain           Bound    default/ubuntu1-pvc   nfs-storage             80m
