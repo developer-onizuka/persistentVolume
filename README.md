@@ -16,7 +16,7 @@ Install nfs-client and Mount the NFS directory on each worker node. In my case, 
 # 1-1. Create Storage Class
 A StorageClass provides a way for administrators to describe the "provisioner" and its parameter for storage they offer such as premium or standard in case of Azure.<br>
 If using a provisioner plugin, you can add it to the provisioner parameter in the configuration, something like kubernetes.io/aws-ebs or kubernetes.io/azure-file but no plugin for NFS is provided. So use anything like "kubernetes.io/no-provisioner" instead.
-
+- https://kubernetes.io/docs/concepts/storage/storage-classes
 ```
 # kubectl apply -f sc.yaml 
 ```
